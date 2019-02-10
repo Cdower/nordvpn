@@ -18,8 +18,6 @@ VOLUME ["/vpn"]
 RUN apk --no-cache --no-progress update && \
     apk --no-cache --no-progress upgrade && \
     apk --no-cache --no-progress add bash curl unzip iptables ip6tables jq openvpn tini shadow  && \
-    chown -R openvpn:openvpn /vpn
-
-USER openvpn
+    mkdir -p /vpn/ovpn
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/nordVpn.sh"]
