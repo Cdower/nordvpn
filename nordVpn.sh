@@ -51,6 +51,7 @@ then
     iptables  -A OUTPUT -o eth0 -d $iptables_domain -j ACCEPT
     ip6tables -A OUTPUT -o eth0 -d $iptables_domain -j ACCEPT 2> /dev/null
     curl -s $URL_OVPN_FILES -o /tmp/ovpn.zip
+    mkdir /tmp/ovpn
     unzip -q /tmp/ovpn.zip -d /tmp/ovpn
     mv /tmp/ovpn/*/*.ovpn $ovpn_dir
     rm -rf /tmp/*
