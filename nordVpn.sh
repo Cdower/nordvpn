@@ -188,9 +188,11 @@ if [ -z "$USER" ]; then
     if [ ! -f /vpn/auth ]; then
         echo "No Vairalbes or configs found"
         exit 1
+    else
+        echo "Skipping: Create auth_file"
     fi
 else
-    # Create auth_file
+    echo "Create auth_file"
     echo "$USER" > $auth_file
     echo "$PASS" >> $auth_file
     chmod 0600 $auth_file
