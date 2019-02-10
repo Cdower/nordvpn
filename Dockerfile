@@ -1,11 +1,11 @@
-FROM alpine:3.7
+FROM alpine:3.9
 
 LABEL maintainer="Julio Gutierrez <bubuntux@gmail.com>"
 
 COPY nordVpn.sh /usr/bin
 
-HEALTHCHECK --start-period=15s --timeout=15s --interval=60s \
-            CMD curl -fL 'https://api.ipify.org' || exit 1
+HEALTHCHECK --timeout=15s --interval=60s\
+  CMD curl -fL 'https://www.google.com' || exit 1
 
 ENV URL_NORDVPN_API="https://api.nordvpn.com/server" \
     URL_RECOMMENDED_SERVERS="https://nordvpn.com/wp-admin/admin-ajax.php?action=servers_recommendations" \
@@ -17,7 +17,8 @@ VOLUME ["/vpn/ovpn/"]
     # Install dependencies 
 RUN apk --no-cache --no-progress update && \
     apk --no-cache --no-progress upgrade && \
-    apk --no-cache --no-progress add bash curl unzip iptables ip6tables jq openvpn tini && \
+    apk --no-cache --no-progress add bash curl unzip iptables ip6tables jq openvpn tini shadow  && \
+    addgroup -S vpn && \
     mkdir -p /vpn/ovpn/
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/nordVpn.sh"]
