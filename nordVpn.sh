@@ -5,7 +5,7 @@ iptables  -F OUTPUT
 ip6tables -F OUTPUT 2> /dev/null
 iptables  -P OUTPUT DROP
 ip6tables -P OUTPUT DROP 2> /dev/null
-iptables  -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 
+iptables  -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 ip6tables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2> /dev/null
 iptables  -A OUTPUT -o lo -j ACCEPT
 ip6tables -A OUTPUT -o lo -j ACCEPT 2> /dev/null
@@ -15,9 +15,13 @@ iptables  -A OUTPUT -d `ip -o addr show dev eth0 | awk '$3 == "inet" {print $4}'
 ip6tables -A OUTPUT -d `ip -o addr show dev eth0 | awk '$3 == "inet6" {print $4; exit}'` -j ACCEPT 2> /dev/null
 iptables  -A OUTPUT -p udp --dport 53 -j ACCEPT
 ip6tables -A OUTPUT -p udp --dport 53 -j ACCEPT 2> /dev/null
-iptables  -A OUTPUT -o eth0 -p udp --dport 1194 -j ACCEPT 
+iptables  -A OUTPUT -o eth0 -p udp --dport 443 -j ACCEPT
+ip6tables -A OUTPUT -o eth0 -p udp --dport 443 -j ACCEPT 2> /dev/null
+iptables  -A OUTPUT -o eth0 -p tcp --dport 443 -j ACCEPT
+ip6tables -A OUTPUT -o eth0 -p tcp --dport 443 -j ACCEPT 2> /dev/null
+iptables  -A OUTPUT -o eth0 -p udp --dport 1194 -j ACCEPT
 ip6tables -A OUTPUT -o eth0 -p udp --dport 1194 -j ACCEPT 2> /dev/null
-iptables  -A OUTPUT -o eth0 -p tcp --dport 1194 -j ACCEPT 
+iptables  -A OUTPUT -o eth0 -p tcp --dport 1194 -j ACCEPT
 ip6tables -A OUTPUT -o eth0 -p tcp --dport 1194 -j ACCEPT 2> /dev/null
 
 iptables_domain=`echo $URL_NORDVPN_API | awk -F/ '{print $3}'`
@@ -180,10 +184,17 @@ if [ -z $config ]; then
     config="${ovpn_dir}/`ls ${ovpn_dir} | shuf -n 1`"
 fi
 
-# Create auth_file
-echo "$USER" > $auth_file 
-echo "$PASS" >> $auth_file
-chmod 0600 $auth_file
+if [ -z "$USER" ]
+then
+    if [ ! -f /vpn/auth ] then
+        exit(1)
+    fi
+else
+    # Create auth_file
+    echo "$USER" > $auth_file
+    echo "$PASS" >> $auth_file
+    chmod 0600 $auth_file
+fi
 
 openvpn --cd $base_dir --config $config \
     --auth-user-pass $auth_file --auth-nocache \
