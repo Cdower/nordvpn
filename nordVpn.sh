@@ -184,10 +184,10 @@ if [ -z $config ]; then
     config="${ovpn_dir}/`ls ${ovpn_dir} | shuf -n 1`"
 fi
 
-if [ -z "$USER" ]
-then
-    if [ ! -f /vpn/auth ] then
-        exit(1)
+if [ -z "$USER" ]; then
+    if [ ! -f /vpn/auth ]; then
+        echo "No Vairalbes or configs found"
+        exit 1
     fi
 else
     # Create auth_file
